@@ -1907,8 +1907,8 @@ class PageObject(DictionaryObject):
             nonlocal char_scale, space_scale, _space_width, TL, font_size, cmap
             nonlocal orientations, rtl_dir, visitor_text, output, text, _actual_str_size
 
-            check_crlf_space: bool = False
             str_widths: float = 0.0
+
             # Table 5.4 page 405
             if operator == b"BT":
                 tm_matrix = [1.0, 0.0, 0.0, 1.0, 0.0, 0.0]
@@ -1918,14 +1918,14 @@ class PageObject(DictionaryObject):
                 text = ""
                 memo_cm = cm_matrix.copy()
                 memo_tm = tm_matrix.copy()
-                return None
-            if operator == b"ET":
+            elif operator == b"ET":
                 output += text
                 if visitor_text is not None:
                     visitor_text(text, memo_cm, memo_tm, cmap[3], font_size)
                 text = ""
                 memo_cm = cm_matrix.copy()
                 memo_tm = tm_matrix.copy()
+
             # Table 4.7 "Graphics state operators", page 219
             # cm_matrix calculation is reserved for later
             elif operator == b"q":
@@ -1964,6 +1964,7 @@ class PageObject(DictionaryObject):
                 )
                 memo_cm = cm_matrix.copy()
                 memo_tm = tm_matrix.copy()
+
             # Table 5.2 page 398
             elif operator == b"Tz":
                 char_scale = float(operands[0]) / 100 if operands else 1.0
@@ -2012,7 +2013,6 @@ class PageObject(DictionaryObject):
                     pass  # keep previous size
             # Table 5.5 page 406
             elif operator == b"Td":
-                check_crlf_space = True
                 # A special case is a translating only tm:
                 # tm = [1, 0, 0, 1, e, f]
                 # i.e. tm[4] += tx, tm[5] += ty.
@@ -2023,15 +2023,12 @@ class PageObject(DictionaryObject):
                 str_widths = compute_str_widths(_actual_str_size["str_widths"])
                 _actual_str_size["str_widths"] = 0.0
             elif operator == b"Tm":
-                check_crlf_space = True
                 tm_matrix = [float(operand) for operand in operands[:6]]
                 str_widths = compute_str_widths(_actual_str_size["str_widths"])
                 _actual_str_size["str_widths"] = 0.0
             elif operator == b"T*":
-                check_crlf_space = True
                 tm_matrix[5] -= TL
             elif operator == b"Tj":
-                check_crlf_space = True
                 text, rtl_dir, _actual_str_size = self._handle_tj(
                     text,
                     operands,
@@ -2048,7 +2045,7 @@ class PageObject(DictionaryObject):
             else:
                 return None
 
-            if check_crlf_space:
+            if operator in ( b"Td", b"Tm", b"T*", b"Tj"):
                 try:
                     text, output, cm_prev, tm_prev = crlf_space_check(
                         text,
