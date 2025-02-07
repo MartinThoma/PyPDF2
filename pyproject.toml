@@ -58,7 +58,7 @@ package = "./pypdf"
 
 [tool.flit.sdist]
 exclude = [".github/*", "docs/*", "sample-files/.github/*", "sample-files/.gitignore", "sample-files/.pre-commit-config.yaml",  "requirements/*", ".flake8", ".gitignore", ".gitmodules", ".pylintrc", "tox.ini", "make_release.py", ".pre-commit-config.yaml", ".gitblame-ignore-revs", "Makefile"]
-include = ["resources/", "tests/"]
+include = ["resources/", "tests/", "CHANGELOG.md", "LICENSE"]
 
 [tool.pytest.ini_options]
 addopts = "--disable-socket"
