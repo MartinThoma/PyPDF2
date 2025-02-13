@@ -1,7 +1,8 @@
 # PDFDocEncoding Character Set: Table D.2 of PDF Reference 1.7
 # C.1 Predefined encodings sorted by character name of another PDF reference
 # Some indices have '\u0000' although they should have something else:
-# 22: should be '\u0017'
+# '22' should be '\u0017'.
+# '23' has the same Unicode codepoint ('\u0017') which we have assigned to it.
 _pdfdoc_encoding = [
     "\u0000",
     "\u0001",
